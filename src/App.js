@@ -21,6 +21,7 @@ import AcceptedAppointments from './appointment/pages/AcceptedAppointments';
 import Chat from './shared/UI/Chat';
 import send from '../src/images/send64.png'
 import haversine_distance from './util/Haversine_distance'
+import LoadingSpinner from './shared/UI/LoadingSpinner';
 
 let logoutTimer;
 
@@ -29,7 +30,6 @@ function App() {
   const [user, setUser] = useState(null);
   const [userId, setUserId] = useState(null);
   const [token, setToken] = useState(null);
-  const [name, setName] = useState(null);
   const [tokenExpirationDate, setTokenExpirationDate] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -73,8 +73,10 @@ function App() {
     setNearbySelected(false);
     console.log('Rec');
     try {
+      setIsLoading(true);
       const response = await fetch(process.env.REACT_APP_BACKEND + `/posts/rec/${userId}`)
       const responseData = await response.json();
+      setIsLoading(false);
       if (!response.ok) {
         throw new Error(responseData.error);
       };
@@ -86,6 +88,7 @@ function App() {
       setPosts(uniquePosts);
 
     } catch (error) {
+      setIsLoading(false);
       setError(error.message);
     }
   }
@@ -98,8 +101,10 @@ function App() {
     setRecSelected(false);
     console.log('Following');
     try {
+      setIsLoading(true);
       const response = await fetch(process.env.REACT_APP_BACKEND + `/posts/followings/${userId}`)
       const responseData = await response.json();
+      setIsLoading(false);
       if (!response.ok) {
         throw new Error(responseData.error);
       }
@@ -109,6 +114,7 @@ function App() {
       }
       setPosts(posts);
     } catch (error) {
+      setIsLoading(false);
       setError(error.message);
     }
   };
@@ -121,18 +127,19 @@ function App() {
     console.log('Explore');
     (async () => {
       try {
-        // setIsLoading(true);
+        setIsLoading(true);
         let response = await fetch(process.env.REACT_APP_BACKEND + '/posts');
         let responseData = await response.json();
-        // setIsLoading(false);
+        setIsLoading(false);
         if (!response.ok) {
           throw new Error(responseData.message);
         };
         setPosts(responseData.posts);
       } catch (error) {
+        setIsLoading(false);
         setError(error.message);
       }
-      // setIsLoading(false);
+      setIsLoading(false);
     })();
   };
 
@@ -143,10 +150,10 @@ function App() {
     setNearbySelected(true);
     console.log('Nearby');
     try {
-      // setIsLoading(true);
+      setIsLoading(true);
       let response = await fetch(process.env.REACT_APP_BACKEND + '/posts');
       let responseData = await response.json();
-      // setIsLoading(false);
+      setIsLoading(false);
       if (!response.ok) {
         throw new Error(responseData.message);
       };
@@ -154,8 +161,10 @@ function App() {
       nearbyPosts = responseData.posts.map(ele => ({ ...ele, distance: haversine_distance(user.location, ele.location) })).filter(ele => (ele.distance < 50));
       setPosts(nearbyPosts);
     } catch (error) {
+      setIsLoading(false);
       setError(error.message);
     }
+    setIsLoading(false);
   };
 
   const onShowChat = (event) => {
@@ -212,9 +221,10 @@ function App() {
         };
         setPosts(responseData.posts);
       } catch (error) {
+        setIsLoading(false);
         setError(error.message);
       }
-      setIsLoading(false);
+
     })();
   }, [])
 
@@ -224,6 +234,8 @@ function App() {
       {error && <ErrorModal error={error} onClear={() => setError(null)} />}
 
       <Navbar />
+      {isLoading && <LoadingSpinner />}
+
       <section id='main-section'>
 
         {userId && <img id='chat_btn' src={send} onClick={onShowChat} />}

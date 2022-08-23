@@ -5,8 +5,11 @@ html {
   color: rgb(60, 60, 60);
 }
 
-html, body, * {
+html,
+body,
+* {
   box-sizing: border-box;
+  font-family: "Raleway", sans-serif;
 }
 
 a {
@@ -53,7 +56,7 @@ input {
   font-size: 0.6em;
 }
 
-.rec.rec-arrow:enabled:hover{
+.rec.rec-arrow:enabled:hover {
   background-color: black;
 }
 
@@ -61,15 +64,15 @@ input {
   background-color: white;
 }
 
-#chat_btn{
+#chat_btn {
   position: fixed;
   bottom: 9%;
   right: 6%;
   cursor: pointer;
 }
 
-div{
-  overflow-wrap:break-word;
+div {
+  overflow-wrap: break-word;
 }
 
 /* .ff-nsw {
